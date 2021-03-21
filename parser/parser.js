@@ -17,11 +17,36 @@ const parse = async (url) => {
       let comicData = {};
 
       // functionality to grab required text
-      comicData.id = await page.evaluate(() => document.querySelector('body * > div.input-group > input').value);
-      comicData.title = await page.evaluate(() => document.querySelector('body * > div.projects > h2').innerText);
-      comicData.publisher = await page.evaluate(() => document.querySelector('body * > div.projects > ul > li:first-child').innerText);
-      comicData.grade = await page.evaluate(() => document.querySelector('body * > div.projects > h2:nth-child(5)').innerText);
-      // console.log(comicData);
+      // comicData.comicId = await page.evaluate(() => document.querySelector('body * > div.input-group > input').value);
+      // comicData.title = await page.evaluate(() => document.querySelector('body * > div.projects > h2').innerText);
+      // comicData.publisher = await page.evaluate(() => document.querySelector('body * > div.projects > ul > li:first-child').innerText);
+      // comicData.grade = await page.evaluate(() => document.querySelector('body * > div.projects > h2:nth-child(5)').innerText);
+      // // console.log(comicData);
+
+
+      //refactor to concurrent calls
+      Promise.all([
+        await page.evaluate(() => document.querySelector('body * > div.input-group > input').value),
+        await page.evaluate(() => document.querySelector('body * > div.projects > h2').innerText),
+        await page.evaluate(() => document.querySelector('body * > div.projects > ul > li:first-child').innerText),
+        await page.evaluate(() => document.querySelector('body * > div.projects > h2:nth-child(5)').innerText)
+      ])
+        .then (result => {
+          // console.log('promise chain result array here', result);
+
+          let finalText = [...result];
+          comicData.comicId = finalText[0];
+          comicData.title = finalText[1];
+          comicData.publisher = finalText[2];
+          comicData.grade = finalText[3];
+          // console.log(comicData);
+
+          return comicData;
+        })
+        .catch (err => {
+          console.log('failed to retrieve text from HTML', err);
+        })
+
 
       return comicData;
     })
