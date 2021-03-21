@@ -11,7 +11,7 @@ const parse = async (url) => {
       await page.waitForSelector('body');
 
       await page.goto(url, { waitUntil: 'networkidle0' });
-      const data = await page.evaluate(() => document.querySelector('body *').outerHTML);
+      const data = await page.evaluate(() => document.querySelector('body * > div.projects').outerHTML);
 
       console.log(data);
 
