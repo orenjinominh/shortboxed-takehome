@@ -1,15 +1,15 @@
 // sample url and object to test functionality of web scraper
-const url = 'https://www.cbcscomics.com/grading-notes/21-04D753B-004';
+// const url = 'https://www.cbcscomics.com/grading-notes/21-04D753B-004';
 const puppeteer = require ('puppeteer');
 
 
-let parse = async (url) => {
+let parse = async (paramID) => {
+  let url = `https://www.cbcscomics.com/grading-notes/${paramID}`
   let comicData = {};
 
   await puppeteer.launch()
     .then (async browser => { 
       const page = await browser.newPage(); 	
-      await page.goto(url); 	
       await page.waitForSelector('body');
 
       await page.goto(url, { waitUntil: 'networkidle0' });
@@ -47,6 +47,5 @@ let parse = async (url) => {
 
 }
 
-parse(url);
 
 module.exports = parse; 

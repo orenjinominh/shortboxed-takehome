@@ -29,108 +29,54 @@ let parseCBCS = require('../parser/parser.js');
 app.post('/api/cbcs/json/:id', async function(req,res) {
   console.log('inside post');
   
-  await parseCBCS(`https://www.cbcscomics.com/grading-notes/${req.params.id}`)
+  await parseCBCS(req.params.id)
     .then(result => {
-      console.log('inside then block');
-
+      comicsInfo.create({...result})
+        .then(doc => {
+          res.send(doc);
+        })
+        .catch(err=>{
+          console.error('error create doc', err)
+          res.status(404);
+        })
     })
     .catch(err => {
       console.log('error scraping', err);
     })
 
-  // comicsInfo.insertOne({metaData}).exec((err, data) => {
-  //   if (err) {
-  //     console.error('error inserting new ID into db', err);
-  //   } else {
-  //     console.log('success inserting into db', data);
-  //   }
-  // });
-
-
 });
 
-app.get('/api/cbcs/json/:id', function(req, res) {
-  console.log('req params id', req.params.id);
+// Route to drop all the comic metadata in the database
+app.get('/comics/drop', function(req, res) {
 
   comicsInfo
-    .find({})
-    .exec((err, data) => {
-      console.log('data should be here', data);
-      if (err) console.error('cannot find all', err);
-      res.json(data);
-    });
+    .deleteMany({})
+    .then(function(res) {
+        res.send('all comics metadata deleted');
+    })
+    .catch(function(err) {
+        res.json(err)
+    })
+});
 
-  // finds only one matching comic
-  // comicsInfo
-  //   .find({'comicId': req.params.id})
-  //   .exec((err, metadata) => {
-  //     console.log('inside comic model', metadata);
-
-  //     if (err) {
-  //       console.log('inside err message for unfound id in db');
-  //     }
-  //     res.status(200).json(metadata);
-  //   });
+app.get('/api/cbcs/json/:id', async function(req, res) {
+  console.log('req params id', req.params.id);
 
 
-  // let idString = JSON.stringify(req.params.id);
-  // console.log('idstring here', idString);
-  // try {
-  //   console.log('inside axios block');
-  //   axios.get(`http://localhost:3000/api/cbcs/json/${req.params.id}`)
-  //     .then(info => {
-  //       console.log('inside then block info', info.data);
-  //       res.status(200).send(info);
-  //       // comicsInfo
-  //       //   .find({'comicId': info.data.comicId})
-  //       //   .exec((err, metadata) => {
-  //       //     console.log('inside comic model');
-
-  //       //     if (err) {
-  //       //       console.log('inside err message for unfound id in db');
-  //       //     }
-  //       //     res.status(200).json(metadata);
-  //       //     next();
-  //       //     // res.status(200).send(data);
-  //       //   })
-  //     })
-  //     .catch(err => {
-  //       console.log('Error running db query', err);
-  //     })
-
-  // } catch(err) {
-  //   console.error('oopsies', err);
-  // }
+  if (comicsInfo.exists({comicId: req.params.id})) {
+    comicsInfo
+      .findOne({comicId: req.params.id})
+      .exec((err, metadata) => {
+        if (err) console.log('error here');
+        res.status(200).send(metadata);
+      });
+  } else {
+    app.post(`/api/cbcs/json/${req.params.id}`)
+  }
 
 
 });
-  // comicsInfo.find({comicId: idString}).exec((err, data) => {
-  //   console.log('inside comic model id string', idString);
-  //   if (err) {
-  //     console.log('inside err message for unfound id in db');
 
-      // parseCBCS('https://www.cbcscomics.com/grading-notes/' + idString)
-      //   .then(metaData => {
-      //     console.log('inside metadata chain to to inserted', metaData);
-
-      //     comicsInfo.insertOne({metaData}).exec((err, data) => {
-      //       if (err) {
-      //         console.error('error inserting new ID into db', err);
-      //       } else {
-      //         console.log('success inserting into db', data);
-      //       }
-      //     });
-
-      //     res.status(200).json(metaData);
-      //   })
-      //   .catch(err =>{
-      //     console.error('Failed to run crawler on given ID', err);
-      //   });
-    // }
-    // console.log('data found', data);
-    // res.status(200).send(data);
-//   })
-// });
 
 /* SERVING UP STATIC FILE FOR BUILD */
 // app.use(express.static(path.join(__dirname, 'build')));
@@ -140,3 +86,4 @@ app.get('/api/cbcs/json/:id', function(req, res) {
 // });
 
 module.exports = app;
+
