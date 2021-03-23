@@ -97,13 +97,6 @@ app.get('/api/cbcs/json/:id', async function(req, res) {
   }
 });
 
-app.get('/:id', (req, res) => {
-  res.sendFile(path.join(__dirname + '/../public/index.html'));
-});
-
-app.get('/*', (req, res) => {
-  res.sendFile(path.join(__dirname + '/../public/index.html'));
-});
 
 
 module.exports = app;

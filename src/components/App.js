@@ -22,7 +22,7 @@ class App extends React.Component {
       contentType: 'application/json',
       success: (data) => {
         this.setState({
-          comic: [...data]
+          comic: data
         });
         console.log('Retrieved comic data successfully!', data);
       },
@@ -43,8 +43,9 @@ class App extends React.Component {
   render() {
     return (
       <div> 
-        <p> say something! {console.log(this.state.comic)}</p>
-        <p>{this.state.comic}</p>
+        <p>This is the comic metadata yo!</p>
+        {console.log(this.state.comic)}
+        {this.state.comic.map(comic => <div>{comic.title} {comic.publisher} {comic.grade} </div> )}
       </div>
     )
   }
