@@ -6,6 +6,14 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 In the project directory, you can run:
 
+### `npm run start-server`
+Runs the Express server set to port 4000 and enables connection to your local MongoDB. 
+
+### `node parser/parser.js`
+At the top of your local directory, retrieves the CBCS metadata of comicId, publisher, title, and grade. 
+- Un-comment the sample url at the top of the file, comment out line 7, and pass it in as a parameter and execute parse(url)
+- OR add parse(paramID) of your choice to retrieve any comic's metadata in an JSON format, independent of this project. ParamID will be a string.
+
 ### `yarn start`
 
 Runs the app in the development mode.\

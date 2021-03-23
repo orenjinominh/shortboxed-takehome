@@ -1,3 +1,4 @@
+const path = require('path');
 const express = require('express');
 const app = express();
 app.use(express.json());
@@ -12,6 +13,7 @@ app.use((req, res, next) => {
   );
   next();
 });
+
 
 /* IMPORT DB MODEL AND PARSE FUNC */
 const comicsInfo = require('../database/comicsInfo.js');
@@ -93,6 +95,14 @@ app.get('/api/cbcs/json/:id', async function(req, res) {
       res.status(200).send(result);
     });
   }
+});
+
+app.get('/:id', (req, res) => {
+  res.sendFile(path.join(__dirname + '/../public/index.html'));
+});
+
+app.get('/*', (req, res) => {
+  res.sendFile(path.join(__dirname + '/../public/index.html'));
 });
 
 
