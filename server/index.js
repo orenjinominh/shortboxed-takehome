@@ -1,12 +1,7 @@
-// require('dotenv').config();
-const axios = require('axios');
-const path = require('path');
 const express = require('express');
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
-// const cors = require('cors');
-// app.use(cors());
 
 
 app.use((req, res, next) => {
@@ -21,11 +16,6 @@ app.use((req, res, next) => {
 /* IMPORT DB MODEL AND PARSE FUNC */
 const comicsInfo = require('../database/comicsInfo.js');
 let parseCBCS = require('../parser/parser.js');
-const { send } = require('process');
-
-// app.get('/:id', (req, res) => {
-//   res.sendFile(path.join(__dirname + '/../public/index.html'));
-// });
 
 // Post one comic's metadata to database directly using its ID
 app.post('/api/cbcs/json/:id', async function(req,res) {
@@ -62,7 +52,6 @@ app.get('/comics/drop', function(req, res) {
 });
 
 // Route to get comic by ID, if ID does not exist in db- scrape website in real time
-
 app.get('/api/cbcs/json/:id', async function(req, res) {
   console.log('inside get- req params id: ', req.params.id);
 
@@ -89,29 +78,10 @@ app.get('/api/cbcs/json/:id', async function(req, res) {
         console.log('error finding existing comic metadata', err);
       }
       res.status(200).send(result);
-      
     });
   }
-
-  // comicsInfo.find({comicId: req.params.id}).exec(function(err, docs) {
-  //   if (docs.length){
-  //     cb('Name exists already', null);
-  //   } else {
-  //     user.save(function(err) {
-  //       cb(err,user);
-  //     }
-  //   }
-  // });
-
 });
 
-
-/* SERVING UP STATIC FILE FOR BUILD */
-// app.use(express.static(path.join(__dirname, 'build')));
-
-// app.get('/', function (req, res) {
-//   res.sendFile(path.join(__dirname, 'build', 'index.html'));
-// });
 
 module.exports = app;
 

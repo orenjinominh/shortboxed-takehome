@@ -7,6 +7,4 @@ const db = mongoose.connect(mongoUri, {
   useCreateIndex: true
 });
 
-// const comicsInfo = require('./comicsInfo.js');
-
 module.exports.db = db;

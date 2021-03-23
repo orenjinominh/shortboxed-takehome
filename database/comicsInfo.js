@@ -10,6 +10,4 @@ const comicsInfoSchema = new mongoose.Schema({
 });
 
 const comicsInfo = mongoose.model('comicsInfo', comicsInfoSchema);
-
-
 module.exports = comicsInfo;
