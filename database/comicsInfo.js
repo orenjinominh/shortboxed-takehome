@@ -9,7 +9,7 @@ const comicsInfoSchema = new mongoose.Schema({
   grade: String
 });
 
-const comicsInfo = mongoose.model('SimilarProperties', comicsInfoSchema);
+const comicsInfo = mongoose.model('comicsInfo', comicsInfoSchema);
 
 
 
