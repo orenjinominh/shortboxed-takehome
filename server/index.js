@@ -39,12 +39,25 @@ app.post('/api/cbcs/json/:id', async function(req,res) {
 });
 
 // Route to drop all the comic metadata in the database
-app.get('/comics/drop', function(req, res) {
+app.delete('/comics/drop', function(req, res) {
 
   comicsInfo
     .deleteMany({})
     .then(function(res) {
         res.send('all comics metadata deleted');
+    })
+    .catch(function(err) {
+        res.json(err)
+    })
+});
+
+// Route to retrieve all the comics metadata in the database
+app.get('/comics/getAll', function(req, res) {
+
+  comicsInfo
+    .find({})
+    .then(function(data) {
+        res.send(data);
     })
     .catch(function(err) {
         res.json(err)
