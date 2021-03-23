@@ -21,11 +21,13 @@ app.use((req, res, next) => {
 /* IMPORT DB MODEL AND PARSE FUNC */
 const comicsInfo = require('../database/comicsInfo.js');
 let parseCBCS = require('../parser/parser.js');
+const { send } = require('process');
 
 // app.get('/:id', (req, res) => {
 //   res.sendFile(path.join(__dirname + '/../public/index.html'));
 // });
 
+// Post one comic's metadata to database directly using its ID
 app.post('/api/cbcs/json/:id', async function(req,res) {
   console.log('inside post');
   
@@ -36,7 +38,7 @@ app.post('/api/cbcs/json/:id', async function(req,res) {
           res.send(doc);
         })
         .catch(err=>{
-          console.error('error create doc', err)
+          console.error('error creating doc', err)
           res.status(404);
         })
     })
@@ -59,21 +61,47 @@ app.get('/comics/drop', function(req, res) {
     })
 });
 
+// Route to get comic by ID, if ID does not exist in db- scrape website in real time
+
 app.get('/api/cbcs/json/:id', async function(req, res) {
-  console.log('req params id', req.params.id);
+  console.log('inside get- req params id: ', req.params.id);
 
+  let found = await comicsInfo.exists({comicId: req.params.id});
 
-  if (comicsInfo.exists({comicId: req.params.id})) {
-    comicsInfo
-      .findOne({comicId: req.params.id})
-      .exec((err, metadata) => {
-        if (err) console.log('error here');
-        res.status(200).send(metadata);
-      });
+  if (!found) {
+    await parseCBCS(req.params.id)
+      .then(result => {
+        comicsInfo.create({...result})
+          .then(doc => {
+            res.status(200).send(doc);
+          })
+          .catch(err => {
+            console.error('error creating doc with parsed data', err)
+            res.status(404);
+          })
+      })
+      .catch(err => {
+        console.log('error scraping website in real time', err);
+      })
   } else {
-    app.post(`/api/cbcs/json/${req.params.id}`)
+    comicsInfo.find({comicId: req.params.id}).exec(function(err, result) {
+      if (err) {
+        console.log('error finding existing comic metadata', err);
+      }
+      res.status(200).send(result);
+      
+    });
   }
 
+  // comicsInfo.find({comicId: req.params.id}).exec(function(err, docs) {
+  //   if (docs.length){
+  //     cb('Name exists already', null);
+  //   } else {
+  //     user.save(function(err) {
+  //       cb(err,user);
+  //     }
+  //   }
+  // });
 
 });
 
