@@ -77,7 +77,8 @@ app.get('/api/cbcs/json/:id', async function(req, res) {
       .then(result => {
         comicsInfo.create({...result})
           .then(doc => {
-            res.status(200).send(doc);
+            doc = [doc];
+            res.status(200).json(doc);
           })
           .catch(err => {
             console.error('error creating doc with parsed data', err)

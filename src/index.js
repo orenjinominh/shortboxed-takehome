@@ -15,6 +15,7 @@ const getId = () => {
   return id;
 
 };
+
 ReactDOM.render(<App id={getId()}/>, document.getElementById('root'));
 
 
